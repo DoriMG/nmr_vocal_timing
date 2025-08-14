@@ -153,5 +153,9 @@ lmm = lmer(data  ~noise  +(1|animal), data =df)
 anova(lmm)
 
 
+all_plots = (ms_300|ms_600|ms_900)/
+  (call_delay_periodic|call_delay_peak|callnum_per_epoch)/
+  (ms_300_AUP|ms_600_AUP|ms_900_AUP)/
+  (call_delay_periodic_AUP|call_delay_peak_AUP|callnum_periodic_AUP)
 
 
