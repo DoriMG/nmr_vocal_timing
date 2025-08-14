@@ -15,10 +15,7 @@ sys.path.append(os.path.join(os.path.dirname(os.getcwd()), 'util'))
 from preprocessing import find_all_text_files, load_calls, convert_to_R
 
 
-
-
 def call_per_period(start, end, burst_length, df):
-
     calls_during_noise = []
     current_start = start
     epoch_with_call = []
@@ -139,7 +136,7 @@ data['data_sec'] = edges_temp[data['data'].astype(int)]
 data['condition'] = np.asarray(conditions)[data['condition']]
 data.to_csv(os.path.join(out_folder,'periodic_noise_peak_delay.csv'), index=False)  
 
-##### Soft chirp experimetns ###########
+##### Soft chirp experiments ###########
 
 def get_start_times(conditions, stim_folder):
     start_time = {}
@@ -163,14 +160,19 @@ def get_start_times(conditions, stim_folder):
 def call_per_stim(start_time, stim_times, burst_length, df):
 
     calls_during_noise = []
+    calls_per_stim = []
     for stim in stim_times:
         current_start = stim + start_time
         current_end = current_start + (burst_length*2)
         df_temp = df[(df['end']<current_end) & (df['start']>current_start)]
         calls_during_noise += list(df_temp['start'] - current_start)
+        if len(df_temp)>0:
+            calls_per_stim +=[1]
+        else:
+            calls_per_stim += [0]
         current_start = current_end
 
-    return calls_during_noise
+    return calls_during_noise, calls_per_stim
 
 ###############################################################################
 ## Analysis of soft chirp experiment
@@ -208,7 +210,7 @@ stim_time = get_start_times(conditions, stim_folder)
 for i, file in enumerate(all_files):
     df = load_calls(file)
     filename = os.path.basename(file)
-    animal_id = filename.split('_')[0]
+    animal_id = filename.split('_')[0][:-4]
     for j,c in enumerate(conditions):
         start_time = df.loc[df['label'] == 'start_'+c, 'start'].values[0]
         end_time = df.loc[df['label'] == 'end_'+c, 'start'].values[0]
@@ -220,11 +222,11 @@ for i, file in enumerate(all_files):
         
         
         if c == '300sc':
-            calls = call_per_stim(start_time, stim_time[c],0.3, df)
+            calls, epoch_with_call = call_per_stim(start_time, stim_time[c],0.3, df)
         if c == '600sc':
-            calls = call_per_stim(start_time, stim_time[c],0.6, df)
+            calls, epoch_with_call = call_per_stim(start_time, stim_time[c],0.6, df)
         if c == '900sc':
-            calls = call_per_stim(start_time, stim_time[c],0.9, df)
+            calls, epoch_with_call = call_per_stim(start_time, stim_time[c],0.9, df)
             
         if tot_calls>min_tot_calls:
             bins_all[i,j,:] = np.histogram(calls, edges)[0]

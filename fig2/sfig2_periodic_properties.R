@@ -6,8 +6,9 @@ out_folder = "figs"
 
 data_file = file.path(folder, "callnum_p_epoch_periodic_noise.csv")
 df <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
-df$data = df$data*100
+df$data = df$data*100 # convert to percentage
 
+# Figure S2A
 callnum_per_epoch = ggplot(df, aes(y=data, x=condition, fill=condition))+ 
   stat_summary(fun=mean, geom='bar', alpha=1,  fill=c('#B7B597', '#6B8A7A','#254336'))+
   stat_summary(fun.data = mean_cl_normal, geom="errorbar", width=0.3)+
@@ -20,7 +21,7 @@ anova(lmm)
 data_file = file.path(folder, "hist_periodic_noise.csv")
 df <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
 
-
+# Figure S2B
 call_delay_periodic = ggplot(df, aes(y=data, x=condition, fill=condition))+  
   stat_summary(fun=mean, geom='bar', alpha=1,  fill=c('#B7B597', '#6B8A7A','#254336'))+
   stat_summary(fun.data = mean_cl_normal, geom="errorbar", width=0.3)+
@@ -34,7 +35,7 @@ anova(lmm)
 data_file = file.path(data_folder, "periodic_noise_peak_delay.csv")
 df <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
 
-
+# Figure S2C
 call_delay_peak = ggplot(df, aes(y=data_sec, x=condition, fill=condition))+ 
   stat_summary(fun=mean, geom='bar', alpha=1,  fill=c('#B7B597', '#6B8A7A','#254336'))+
   stat_summary(fun.data = mean_cl_normal, geom="errorbar", width=0.3)+
@@ -45,11 +46,13 @@ lmm = lmer(data  ~condition  +(1|session ), data =df)
 anova(lmm)
 
 
-## SC
+## SC ##
 
 data_file = file.path(folder, "callnum_p_epoch_900_sc.csv")
 df <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
-df$data = df$data * 100
+df$data = df$data * 100 # convert to percentage
+
+# Figure S2D
 callnum_periodic_sc = ggplot(df, aes(y=data, x=condition, fill=condition))+ 
   stat_summary(fun=mean, geom='bar', alpha=1,  fill=c('#B7B597', '#6B8A7A','#254336'))+
   stat_summary(fun.data = mean_cl_normal, geom="errorbar", width=0.3)+
@@ -63,6 +66,7 @@ anova(lmm)
 data_file = file.path(folder, "hist_data_900_sc.csv")
 df <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
 
+# Figure S2E
 call_delay_periodic_sc = ggplot(df, aes(y=data, x=condition, fill=condition))+  
   stat_summary(fun=mean, geom='bar', alpha=1,  fill=c('#B7B597', '#6B8A7A','#254336'))+
   stat_summary(fun.data = mean_cl_normal, geom="errorbar", width=0.3)+
@@ -76,6 +80,7 @@ anova(lmm)
 data_file = file.path(folder, "data_sc_peak_delay.csv")
 df <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
 
+# Figure S2F
 call_delay_peak_sc = ggplot(df, aes(y=data_sec, x=condition, fill=condition))+ 
   stat_summary(fun=mean, geom='bar', alpha=1,  fill=c('#B7B597', '#6B8A7A','#254336'))+
   stat_summary(fun.data = mean_cl_normal, geom="errorbar", width=0.3)+
