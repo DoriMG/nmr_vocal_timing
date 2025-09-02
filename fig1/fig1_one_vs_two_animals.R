@@ -6,18 +6,9 @@ folder = "data"
 out_folder = "figs"
 
 
+
 data_file = file.path(folder, "all_ici.csv")
 df <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
-df= df_playback
-df$playback = 1
-
-data_file = file.path(folder, "response_time_by_bout_hierarchy.csv")
-df_hier <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
-df_hier$playback = 0
-
-df = bind_rows(df, df_hier)
-
-
 
 response_time = ggplot(df, aes(x=ici, fill=factor(playback))) + 
   geom_histogram(aes(y = after_stat(count / sum(count))),binwidth=0.1) +
@@ -61,6 +52,7 @@ interrupt_hier
 t.test(df_hier$data[df_hier$shuff==0], df_hier$data[df_hier$shuff==1])
 
 # Fig 1C Interruptions 1 animal
+
 df_pb = df[df$playback==1,]
 interrupt_pb = ggplot(df_pb, aes(x=factor(shuff), y=data)) + 
   stat_summary(fun=mean, geom='bar', alpha=1, fill=c('#68B0AB','#808080')) +
