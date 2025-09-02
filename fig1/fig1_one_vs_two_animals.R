@@ -6,8 +6,8 @@ folder = "data"
 out_folder = "figs"
 
 
-data_file = file.path(folder, "response_time_by_bout_chubbs.csv")
-df_playback <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
+data_file = file.path(folder, "all_ici.csv")
+df <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
 df= df_playback
 df$playback = 1
 
@@ -19,66 +19,30 @@ df = bind_rows(df, df_hier)
 
 
 
-response_time = ggplot(df, aes(x=response_time, fill=factor(playback))) + 
+response_time = ggplot(df, aes(x=ici, fill=factor(playback))) + 
   geom_histogram(aes(y = after_stat(count / sum(count))),binwidth=0.1) +
   scale_y_continuous(labels = scales::percent)+
   scale_fill_manual(values=c('#E0B0D5', '#68B0AB'), labels = c("Hierarchy", "Playback"))+
   facet_wrap(~playback,  ncol=1,)+
-  labs(x='Response time (s)', y='Number of calls')+ theme_classic()
+  labs(x='Response time (s)', y='Number of calls')+ theme_classic()+
+  xlim(-0.3,3)
 response_time
-ggsave(file.path(folder,"response_time.png"))
 
-
-response_time_pb = ggplot(df_playback, aes(x=response_time)) + 
-  geom_histogram(binwidth = 0.1, fill='#68B0AB')+
-  labs(x='Response time (s)', y='Number of calls')+ theme_classic()+
-  xlim(-0.3,3)
-response_time_pb
-
-response_time_hier = ggplot(df_hier, aes(x=response_time)) + 
-  geom_histogram(binwidth = 0.1, fill='#E0B0D5')+
-  labs(x='Response time (s)', y='Number of calls')+ theme_classic()+
-  xlim(-0.3,3)
-response_time_hier
-
-response_time = response_time_hier/response_time_pb
-ggsave(file.path(folder,"response_time.pdf"), width = 4, height = 6)
-
-
-df_pos = df
-df_pos = df[df$response_time>0,]
-
-
-response_time_pos = ggplot(df_pos, aes(x=response_time,y = after_stat(density), fill=factor(playback))) + 
-  geom_histogram(binwidth = 0.1)+
-  scale_fill_manual(values=c('#68B0AB', '#E0B0D5'), labels = c("Playback", "Hierarchy"))+
-  facet_wrap(~playback)+
-  labs(x='Response time (s)', y='Number of calls')+ theme_classic()
-response_time_pos
-
-
-response_time_comp  = ggplot(df, aes(x=factor(playback), y=response_time, fill = factor(playback))) + 
+df_temp = df[df$ici<3,]
+response_time_comp  = ggplot(df_temp, aes(x=factor(playback), y=ici, fill = factor(playback))) + 
   geom_boxplot()+
   scale_fill_manual(values=c('#E0B0D5','#68B0AB'), labels = c("Playback", "Hierarchy"))+
   scale_x_discrete(labels=c( 'Hierarchy', 'Playback'))+
   labs(y='Response time (s)', x=NULL, fill='Experiment')+ theme_classic()
 
 response_time_comp
-ggsave(file.path(folder,"response_time_comp.pdf"), width = 3, height = 3)
 
-t.test(df$response_time[df$playback==0], df$result[df$playback==1])
+df_temp %>%
+  group_by(factor(playback)) %>%
+  summarise(mean = mean(ici), sd = sd(ici))
 
+t.test(df_temp$ici[df_temp$playback==0], df_temp$ici[df_temp$playback==1])
 
-data_file = file.path(folder, "data_pb.csv")
-df <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
-
-pb_response = ggplot(df, aes(x=time, y=value)) + 
-  stat_summary(fun=mean, geom='line', alpha=1, color='#68B0AB') +
-  stat_summary(fun.data = mean_cl_normal, geom="ribbon", alpha=0.5, fill='#68B0AB')+
-  labs(y='Number of calls',x= 'Time (s)')+ theme_classic()+
-  xlim(c(-0,3))
-pb_response
-ggsave(file.path(folder,"pb_response.png"), width = 4, height = 3)
 
 # Fig 1C&F Interruptions
 data_file = file.path(folder, "interruptions.csv")
