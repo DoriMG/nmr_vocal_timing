@@ -30,7 +30,7 @@ response_time_comp
 
 df_temp %>%
   group_by(factor(playback)) %>%
-  summarise(mean = mean(ici), sd = sd(ici))
+  summarise(mean = mean(ici), sd = sd(ici), n = n())
 
 t.test(df_temp$ici[df_temp$playback==0], df_temp$ici[df_temp$playback==1])
 
@@ -89,6 +89,19 @@ perc_calls_by_behavior  = ggplot(df, aes(x=reorder(touch_type,-data), y=data, fi
   scale_x_discrete(labels=c("Snout-to-snout", "No touch", "Body-to-body", "Snout-to-body", "Anogenital", "Passing", "Other"))+
   labs(y='Calls during touch behavior (%)', x='Type of interaction', fill=NULL)+ theme_classic()+ theme(legend.position="none")
 perc_calls_by_behavior
+
+## Fig 1J Calls after touch
+data_file = file.path(folder, "calls_after_behavior.csv")
+df <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
+
+df_temp = df[df$touch_type == 'Snout-to-snout contact',]
+snout_to_snout = ggplot(df_temp, aes(x=time_sec, y=data)) + 
+  stat_summary(fun=mean, geom='line', alpha=1, color='#6A0066') +
+  stat_summary(fun.data = mean_cl_normal, geom="ribbon", alpha=0.5, fill='#6A0066')+
+  labs(y='Number of calls',x= 'Time (s)')+ theme_classic()+
+  xlim(c(-3,3))
+snout_to_snout
+
 
 
 # Save out all
