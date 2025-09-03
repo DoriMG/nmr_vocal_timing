@@ -22,5 +22,5 @@ touch_type
 
 
 # Save out all
-ggsave(file.path(save_folder,"fig1_calls_during_by_behavior.pdf"),all_plots, width = 8, height =4)
-ggsave(file.path(save_folder,"fig1_calls_during_by_behavior.png"),all_plots, width = 8, height = 4)
+ggsave(file.path(out_folder,"touch_type.pdf"),touch_type, width = 6, height =4)
+ggsave(file.path(out_folder,"touch_type.png"),touch_type, width = 6, height = 4)
