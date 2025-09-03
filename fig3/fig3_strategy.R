@@ -98,6 +98,9 @@ response_timing = ggplot(data=df_temp, aes(x=epoch_type  , y=mean_response_base 
   labs(y ='Response time (s)', x=NULL)+theme_classic()+  facet_wrap(~experiment)
 response_timing
 
+df_temp %>%
+  group_by(condition, epoch_type, experiment)%>%
+  summarise(mean = mean(mean_response_base), sd = sd(mean_response_base), n = n())
 
 ## Stats
 df$epoch_factor = factor(df$epoch_type)
