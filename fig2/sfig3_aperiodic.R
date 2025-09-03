@@ -73,7 +73,7 @@ callnum_per_epoch = ggplot(df, aes(y=data, x=condition, fill=condition))+
   labs(y='% epochs with call',x= 'Condition')+ theme_classic()+coord_cartesian(ylim=c(0,50))
 callnum_per_epoch
 
-lmm = lmer(data  ~condition  +(1|dataset), data =df)
+lmm = lmer(data  ~condition  +(1|animal), data =df)
 anova(lmm)
 
 

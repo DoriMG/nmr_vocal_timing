@@ -1,6 +1,7 @@
 library(ggplot2)
 library(patchwork)
 library(lme4)
+library(lmerTest)
 
 data_folder = "data"
 out_folder = "figs"
@@ -31,7 +32,9 @@ call_delay_periodic
 
 lmm = lmer(data  ~condition  +(1|animal), data =df)
 anova(lmm)
-
+df %>%
+  group_by(condition) %>%
+  summarise(disp = mean(data))
 
 data_file = file.path(data_folder, "periodic_noise_peak_delay.csv")
 df <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
@@ -46,6 +49,10 @@ call_delay_peak
 lmm = lmer(data  ~condition  +(1|session ), data =df)
 anova(lmm)
 
+
+df %>%
+  group_by(condition) %>%
+  summarise(disp = mean(data_sec))
 
 ## SC ##
 
@@ -62,7 +69,9 @@ callnum_periodic_sc
 
 lmm = lmer(data  ~condition  +(1|animal), data =df)
 anova(lmm)
-
+df %>%
+  group_by(condition) %>%
+  summarise(disp = mean(data))
 
 data_file = file.path(folder, "hist_data_900_sc.csv")
 df <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
@@ -71,7 +80,7 @@ df <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
 call_delay_periodic_sc = ggplot(df, aes(y=data, x=condition, fill=condition))+  
   stat_summary(fun=mean, geom='bar', alpha=1,  fill=c('#B7B597', '#6B8A7A','#254336'))+
   stat_summary(fun.data = mean_cl_normal, geom="errorbar", width=0.3)+
-  labs(y='Mean call delay (s)',x= 'Condition')+ theme_classic()+coord_cartesian(ylim=c(0,0.8))
+  labs(y='Mean call delay (s)',x= 'Condition')+ theme_classic()
 call_delay_periodic_sc
 
 lmm = lmer(data  ~condition  +(1|animal), data =df)
@@ -90,6 +99,10 @@ call_delay_peak_sc
 
 lmm = lmer(data  ~condition  +(1|session ), data =df)
 anova(lmm)
+
+df %>%
+  group_by(condition) %>%
+  summarise(disp = mean(data_sec))
 
 all_plots = callnum_per_epoch+call_delay_periodic+call_delay_peak+
   callnum_periodic_sc+call_delay_periodic_sc+call_delay_peak_sc+ 
