@@ -1,6 +1,7 @@
 library(ggplot2)
 library("data.table") 
 library(patchwork)
+library(dplyr)
 
 folder = "data"
 out_folder = "figs"
@@ -102,6 +103,14 @@ snout_to_snout = ggplot(df_temp, aes(x=time_sec, y=data)) +
   xlim(c(-3,3))
 snout_to_snout
 
+# Peak delay
+data_file = file.path(folder, "behavior_peak_delay.csv")
+df <- read.csv(data_file, header=TRUE, stringsAsFactors=TRUE)
+
+
+df %>%
+  group_by(condition) %>%
+  summarise(disp = mean(data_sec), sd(data_sec))
 
 
 # Save out all

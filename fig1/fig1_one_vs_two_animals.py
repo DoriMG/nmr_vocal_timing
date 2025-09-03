@@ -182,10 +182,14 @@ for fold in os.listdir(call_folder_single):
         
 computer_calls = []
 animal_calls = []
+sc_count = [] # Count total SCs
+tot_count =[]
 for file in all_files:
     calls = load_calls(file)
     computer_calls.append(calls[calls['label']=='c'])
     ani_calls = calls[calls['label'].isnull()]
+    sc_count += [np.sum(calls['label'].isnull())]
+    tot_count += [(len(calls)-np.sum(calls['label']=='c')-np.sum(calls['label']=='n'))]
     ani_calls['label'] = 's'
     animal_calls.append(ani_calls)
       
@@ -211,6 +215,7 @@ for i, anim_df in enumerate(animal_calls):
             interruptions_shuff.append(interruption_rate)
 
 # Save out ICI
+
 all_ici.to_csv(os.path.join(save_folder, 'all_ici.csv'), index=False) 
               
 
@@ -224,8 +229,16 @@ df_all.to_csv(os.path.join(save_folder, 'interruptions.csv'), index=False)
     
 # Figure G-J       
 # Set parameters for binning
+
+# Get list of files
+all_files = []
+for file in os.listdir(call_folder):
+    if file.endswith(".txt"):
+        all_files.append(os.path.join(call_folder, file))
+        
+        
 n_bins = 46
-bins = np.linspace(0, 15, n_bins)-5
+bins = np.linspace(0, 10, n_bins)-5
 
 # Get responses relative to behavior
 probs, all_ici_by_ani = get_ici_across_calls(all_files, n_bins, bins)
@@ -248,6 +261,13 @@ data['touch_type'] = tts_temp[data['touch']]
 data.to_csv(os.path.join(save_folder,'calls_after_behavior.csv'), index=False)  
 
 
+# Calculate delay to peak
+data = convert_to_R(np.argmax(probs,2), ['session', 'condition'])
+data = data[~np.isnan(data).any(axis=1)]
+edges_temp = (bins+np.nanmean(np.diff(bins))/2)[:-1]
+data['data_sec'] = edges_temp[data['data'].astype(int)]
+data['condition'] = np.asarray(bs)[data['condition']]
+data.to_csv(os.path.join(save_folder,'behavior_peak_delay.csv'), index=False)
 
 
 all_call_during_behavior = pd.DataFrame(columns=['during_behavior', 'call_during', 'time_from_behavior', 'call_time', 'session'])
