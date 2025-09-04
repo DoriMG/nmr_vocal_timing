@@ -63,7 +63,11 @@ library(rcompanion)
 scheirerRayHare(error_p_ani ~ model*stim_len,
                 data = df)
 
+library(FSA)
 
+DT = dunnTest(error_p_ani ~ model,
+              data=df,
+              method="bh") 
 
 
 all_plots = (all_fitted/(mean_errors+plot_spacer()))+ plot_layout( heights = c(3,1))
