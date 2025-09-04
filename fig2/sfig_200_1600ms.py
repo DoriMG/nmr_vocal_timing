@@ -79,6 +79,8 @@ hist_data = pd.DataFrame(columns=['data','condition', 'animal'])
 num_calls = pd.DataFrame(columns=['data', 'condition', 'animal'])
 num_calls_p_epoch = pd.DataFrame(columns=['data', 'condition', 'animal'])
 
+all_calls_200ms = []
+all_calls_1600ms = []
 
 # Histogram per epoch
 for i, file in enumerate(all_files):
@@ -111,6 +113,11 @@ for i, file in enumerate(all_files):
             df_temp = pd.DataFrame.from_dict({'data': [0], 'condition': [c],'animal': [animal_id]})
         
         num_calls_p_epoch = pd.concat([num_calls_p_epoch, df_temp])
+        
+        if j==0:
+            all_calls_200ms+=calls
+        elif j==1:
+            all_calls_1600ms+=calls
 
 
 # Save calls per conditino        
@@ -134,7 +141,7 @@ data = convert_to_R(bins_all_perc, ['session', 'condition', 'time'])
 edges_temp = (edges+np.nanmean(np.diff(edges))/2)[:-1]
 data['time_sec'] = edges_temp[data['time']]
 data['condition'] = np.asarray(conditions)[data['condition']]
-data.to_csv(os.path.join(out_folder, 'data_periodic_noise_perc.csv'), index=False)  
+data.to_csv(os.path.join(out_folder, 'data_long_short_noise_perc.csv'), index=False)  
 np.save(os.path.join(out_folder,'data_long_short_noise_perc.npy'), bins_all_perc)
 
 data = convert_to_R(np.argmax(bins_all,2), ['session', 'condition'])
